@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html ng-app="countApp">
+
+<head>
+
+    <title>Count Sample</title>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <script src="bower_components/angular/angular.js"></script>
+    <script src="bower_components/angular-route/angular-route.js"></script>
+    <script src="bower_components/angular-animate/angular-animate.js"></script>
+    <script src="bower_components/angular-bootstrap/ui-bootstrap-tpls.js"></script>
+    <script src="bower_components/angular-growl-v2/build/angular-growl.js"></script>
+    <script src="bower_components/angular-resource/angular-resource.js"></script>
+    <script src="bower_components/jquery/dist/jquery.js"></script>
+    <script src="bower_components/bootstrap/dist/js/bootstrap.js"></script>
+
+    <link rel="stylesheet" href="bower_components/fontawesome/css/font-awesome.css">
+    <link rel="stylesheet" href="bower_components/angular-growl-v2/build/angular-growl.css">
+    <link rel="stylesheet" href="bower_components/bootstrap/dist/css/bootstrap.css" >
+
+    <script src="count.js"></script>
+    <script src="js/countController.js"></script>
+
+    <link rel="stylesheet" href="css/count.css">
+
+</head>
+
+<body>
+
+<!-- main page -->
+
+<div class="navbar navbar-default navbar-fixed-top">
+    <div class="container">
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#/">Count Sample</a>
+        </div>
+        <div>
+            <ul class="nav navbar-nav">
+                <li><a href="#/">Dashboard</a></li>
+                <li><a href="#/">Search</a></li>
+            </ul>
+        </div>
+        <div>
+            <ul class="nav navbar-nav navbar-right">
+                <li>
+                    <a href="#/">Sign In</a>
+                </li>
+           </ul>
+        </div>
+    </div>
+</div>
+
+<div class="clearfix"></div>
+
+<div class="container" ng-view></div>
+
+<div class="clearfix"></div>
+
+<footer class="footer">
+    <div class="container">
+        <p class="text-muted">&copy; Copyright 2015</p>
+    </div>
+</footer>
+
+<!-- placeholder for growl -->
+
+<div growl></div>
+
+</body>
+
+</html>
