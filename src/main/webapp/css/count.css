@@ -50,7 +50,7 @@ div.error {
     background-color: #aaa;
 }
 
-table.vertical-text-center > tbody > tr > td {
+table.vertical-text-center>tbody>tr>td {
     vertical-align: middle;
 }
 
@@ -63,7 +63,32 @@ table.vertical-text-center > tbody > tr > td {
     color: transparent !important;
 }
 
-/* ---- Sticky footer styles ---- */
+/* ---- d3 chart ---- */
+
+.bar {
+    fill: steelblue;
+}
+
+.bar:hover {
+    fill: brown;
+}
+
+.axis {
+    font: 10px sans-serif;
+}
+
+.axis path, .axis line {
+    fill: none;
+    stroke: #000;
+    shape-rendering: crispEdges;
+}
+
+.x.axis path {
+    display: none;
+}
+
+/* ---- sticky footer styles ---- */
+
 html {
     position: relative;
     min-height: 100%;
@@ -81,16 +106,16 @@ body {
     background-color: #f8f8f8;
 }
 
-body > .container {
+body>.container {
     padding: 60px 15px 0;
 }
 
-.footer > .container {
+.footer>.container {
     padding-right: 15px;
     padding-left: 15px;
 }
 
-.footer > .container .text-muted {
+.footer>.container .text-muted {
     margin: 15px 0;
     font-weight: bold;
 }
