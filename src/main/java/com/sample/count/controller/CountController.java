@@ -20,7 +20,9 @@ public class CountController {
 
     @RequestMapping(method = POST, value = "/execute")
     public Result[] execute() {
-        return new Result[] { new Result("hello", 2), new Result("world", 3) };
+        return new Result[] { new Result("hello", 1234), new Result("world", 999), new Result("welcome", 800), new Result("game", 777),
+                new Result("controller", 345), new Result("play", 333), new Result("springframework", 300), new Result("main", 200), new Result("bower", 100),
+                new Result("css", 10) };
     }
 
 }
