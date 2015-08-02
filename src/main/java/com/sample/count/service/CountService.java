@@ -17,23 +17,37 @@ public class CountService {
     private static Logger log = LoggerFactory.getLogger(CountService.class);
 
     public List<Result> execute() {
-        System.out.println("start executing...");
-        List<String> lines = exec("hdfs dfs -cat output/*");
+        String seed = getSeed();
+
+        // execute hadoop jar
+        String executeCommand = "/home/chenjie/workspace/count/execute.sh " + seed;
+        exec(executeCommand);
+
+        // fetch output from hdfs
+        String fetchCommand = "/home/chenjie/workspace/count/fetch.sh " + seed;
+        List<String> lines = exec(fetchCommand);
+
+        // parse results
         return parseResults(lines);
     }
 
     private List<String> exec(String command) {
         try {
-            log.debug("---- executing command: {}", command);
-            List<String> lines = new ArrayList<>();
+            log.debug("---- executing command: {} ----", command);
+
+            // execute command
             Process process = Runtime.getRuntime().exec(command);
             BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+
+            // collect output
+            List<String> lines = new ArrayList<>();
             String line = null;
             while ((line = reader.readLine()) != null) {
                 log.debug(line);
                 lines.add(line);
             }
-            log.debug("---- complete successfully");
+
+            log.debug("---- completed successfully ----");
             return lines;
         } catch (Exception e) {
             log.error("failed to execute", e);
@@ -55,6 +69,10 @@ public class CountService {
             }
         }
         return results;
+    }
+
+    private String getSeed() {
+        return String.valueOf(System.currentTimeMillis());
     }
 
 }
