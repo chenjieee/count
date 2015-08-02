@@ -1,6 +1,8 @@
 package com.sample.count.service;
 
 import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -41,14 +43,12 @@ public class CountService {
 
             // execute command
             Process process = Runtime.getRuntime().exec(command);
-            BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
 
-            // collect output
-            List<String> lines = new ArrayList<>();
-            String line = null;
-            while ((line = reader.readLine()) != null) {
-                lines.add(line);
-            }
+            // collect error output
+            collectOutput(process.getErrorStream());
+
+            // collect normal output
+            List<String> lines = collectOutput(process.getInputStream());
 
             process.destroy();
 
@@ -58,6 +58,18 @@ public class CountService {
             log.error("failed to execute", e);
         }
         return new ArrayList<>();
+    }
+
+    private List<String> collectOutput(InputStream inputStream) throws IOException {
+        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+        List<String> lines = new ArrayList<>();
+        String line = null;
+        while ((line = reader.readLine()) != null) {
+            log.debug(line);
+            lines.add(line);
+        }
+        reader.close();
+        return lines;
     }
 
     private List<Result> parseResults(List<String> lines) {
@@ -76,7 +88,11 @@ public class CountService {
 
         Collections.sort(results);
 
-        return results.subList(0, TOP_N);
+        if (results.size() > TOP_N) {
+            results = results.subList(0, TOP_N);
+        }
+
+        return results;
     }
 
     private String getSeed() {
