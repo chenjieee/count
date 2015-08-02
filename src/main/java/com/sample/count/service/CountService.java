@@ -1,7 +1,7 @@
 package com.sample.count.service;
 
 import java.io.BufferedReader;
-import java.io.IOException;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
@@ -19,71 +19,81 @@ public class CountService {
 
     private static Logger log = LoggerFactory.getLogger(CountService.class);
 
+    public static final String OUTPUT_FILE = "part-r-00000";
     public static final int TOP_N = 10;
 
     public List<Result> execute(String inputPath, boolean caseInsensitive, int minLength, int maxLength) {
         String outputPath = "output-" + getSeed();
 
-        // execute hadoop jar
-        String executeCommand = String.format("/home/chenjie/workspace/count/execute.sh %s %s %s %d %d", inputPath, outputPath, caseInsensitive,
-                minLength, maxLength);
+        // execute hadoop and fetch output
+        String executeCommand = String.format("./execute.sh %s %s %s %d %d", inputPath, outputPath, caseInsensitive, minLength, maxLength);
         exec(executeCommand);
 
-        // fetch output from hdfs
-        String fetchCommand = String.format("/home/chenjie/workspace/count/fetch.sh %s", outputPath);
-        List<String> lines = exec(fetchCommand);
-
         // parse results
-        return parseResults(lines);
+        return parseResults(outputPath);
     }
 
-    private List<String> exec(String command) {
+    private void exec(String command) {
         try {
             log.debug("---- executing command: {} ----", command);
 
             // execute command
             Process process = Runtime.getRuntime().exec(command);
 
-            // collect error output
+            // collect output
             collectOutput(process.getErrorStream());
+            collectOutput(process.getInputStream());
 
-            // collect normal output
-            List<String> lines = collectOutput(process.getInputStream());
-
+            // wait for process to complete
+            process.waitFor();
             process.destroy();
 
             log.debug("---- completed successfully ----");
-            return lines;
         } catch (Exception e) {
-            log.error("failed to execute", e);
+            log.error("unable to execute command", e);
         }
-        return new ArrayList<>();
     }
 
-    private List<String> collectOutput(InputStream inputStream) throws IOException {
-        BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-        List<String> lines = new ArrayList<>();
-        String line = null;
-        while ((line = reader.readLine()) != null) {
-            log.debug(line);
-            lines.add(line);
-        }
-        reader.close();
-        return lines;
-    }
-
-    private List<Result> parseResults(List<String> lines) {
-        List<Result> results = new ArrayList<>();
-        for (String line : lines) {
-            try {
-                String[] parts = line.split("\\s+");
-                if (parts.length == 2) {
-                    Result result = new Result(parts[0], Integer.parseInt(parts[1]));
-                    results.add(result);
+    private void collectOutput(final InputStream inputStream) {
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                    List<String> lines = new ArrayList<>();
+                    String line = null;
+                    while ((line = reader.readLine()) != null) {
+                        log.debug(line);
+                        lines.add(line);
+                    }
+                    reader.close();
+                } catch (Exception e) {
+                    log.error("unable to collect output");
                 }
-            } catch (Exception e) {
-                log.warn("unable to parse: {}", line);
+            };
+        }.start();
+    }
+
+    private List<Result> parseResults(String outputPath) {
+        List<Result> results = new ArrayList<>();
+
+        try {
+            BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(outputPath + "/" + OUTPUT_FILE)));
+            String line = null;
+            while ((line = reader.readLine()) != null) {
+                try {
+                    String[] parts = line.split("\\s+");
+                    if (parts.length == 2) {
+                        Result result = new Result(parts[0], Integer.parseInt(parts[1]));
+                        results.add(result);
+                    }
+                } catch (Exception e) {
+                    log.warn("unable to parse: {}", line);
+                }
             }
+            reader.close();
+        } catch (Exception e) {
+            log.error("unable to parse results");
         }
 
         Collections.sort(results);

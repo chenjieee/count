@@ -15,22 +15,22 @@
             <div class="form-group">
                 <label class="control-label col-sm-3">Input Path</label>
                 <div class="col-sm-7">
-                    <select class="form-control" ng-model="config.inputPath" ng-options="inputPath for inputPath in inputPaths" required></select>
+                    <select class="form-control" ng-model="config.inputPath" ng-options="inputPath for inputPath in inputPaths" ng-disabled="executing" required></select>
                 </div>
             </div>
             <div class="form-group">
                 <label class="control-label col-sm-3">Word Length</label>
                 <div class="col-sm-3">
-                    <input type="number" class="form-control" ng-model="config.minLength" placeholder="Enter min length">
+                    <input type="number" class="form-control" ng-model="config.minLength" placeholder="min" ng-disabled="executing">
                 </div>
                 <label class="control-label col-sm-1 text-center">--</label>
                 <div class="col-sm-3">
-                    <input type="number" class="form-control" ng-model="config.maxLength" placeholder="Enter max length">
+                    <input type="number" class="form-control" ng-model="config.maxLength" placeholder="max" ng-disabled="executing">
                 </div>
             </div>
             <div class="form-group">
                 <div class="col-sm-offset-3 col-sm-7">
-                    <label class="control-label"> <input type="checkbox" ng-model="config.caseInsensitive"> Case Insensitive</label>
+                    <label class="control-label"> <input type="checkbox" ng-model="config.caseInsensitive" ng-disabled="executing"> Case Insensitive</label>
                 </div>
             </div>
             <div class="form-group">
