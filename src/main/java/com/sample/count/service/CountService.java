@@ -47,9 +47,10 @@ public class CountService {
             List<String> lines = new ArrayList<>();
             String line = null;
             while ((line = reader.readLine()) != null) {
-                log.debug(line);
                 lines.add(line);
             }
+
+            process.destroy();
 
             log.debug("---- completed successfully ----");
             return lines;
