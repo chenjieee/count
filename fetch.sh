@@ -1,2 +1,2 @@
 #!/bin/sh
-hdfs dfs -cat output-$1/*
+hdfs dfs -cat $1/*

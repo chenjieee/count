@@ -1,6 +1,6 @@
 package com.sample.count.model;
 
-public class Result {
+public class Result implements Comparable<Result> {
 
     private String word;
     private int count;
@@ -27,6 +27,17 @@ public class Result {
 
     public void setCount(int count) {
         this.count = count;
+    }
+
+    @Override
+    public int compareTo(Result that) {
+        if (this.count < that.count) {
+            return 1;
+        } else if (this.count == that.count) {
+            return 0;
+        } else {
+            return -1;
+        }
     }
 
 }

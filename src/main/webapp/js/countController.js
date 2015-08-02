@@ -1,30 +1,51 @@
 var countApp = angular.module('countApp');
 
-countApp.controller('countController', function($scope, $http, growl, $modal) {
+countApp.controller('countController', function($scope, $http, growl) {
 
-    $scope.types = [ 'First Letter', 'Whole Word' ];
+    $scope.inputPaths = [ 'input-00001', 'input-00002', 'input-00003' ];
 
     $scope.config = {
-        name : 'sample',
-        type : $scope.types[0]
+        inputPath : $scope.inputPaths[0],
+        minLength : 0,
+        maxLength : 255,
+        caseInsensitive : true
     };
 
-    $scope.submit = function() {
-        $http.post('api/execute', {
-            name : $scope.name,
-            type : $scope.type
-        }).success(function(data) {
+    $scope.executing = false;
+
+    $scope.execute = function() {
+        $scope.executing = true;
+        growl.success('The job has been submitted.');
+
+        var url = 'api/execute?inputPath=' + $scope.config.inputPath;
+        url = url + '&caseInsensitive=' + $scope.config.caseInsensitive;
+        if ($scope.config.minLength) {
+            url = url + '&minLength=' + $scope.config.minLength;
+        }
+        if ($scope.config.maxLength) {
+            url = url + '&maxLength=' + $scope.config.maxLength;
+        }
+        $http.get(url).success(function(data) {
             $scope.results = data || [];
+
+            var index = 1;
+            $scope.results.forEach(function(result) {
+                result.index = index++;
+            });
+
             $scope.draw();
+
+            $scope.executing = false;
+            growl.success('The job has completed successfully.');
         });
     };
 
     $scope.draw = function() {
         d3.select('#chart_holder').html('');
 
-        var margin = { top: 20, right: 20, bottom: 30, left: 40 };
-        var width = 900 - margin.left - margin.right;
-        var height = 500 - margin.top - margin.bottom;
+        var margin = { top: 20, right: 20, bottom: 30, left: 50 };
+        var width = 800 - margin.left - margin.right;
+        var height = 400 - margin.top - margin.bottom;
 
         var x = d3.scale.ordinal()
             .rangeRoundBands([0, width], .1);

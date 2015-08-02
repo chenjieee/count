@@ -3,6 +3,7 @@ package com.sample.count.service;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -16,15 +17,18 @@ public class CountService {
 
     private static Logger log = LoggerFactory.getLogger(CountService.class);
 
-    public List<Result> execute() {
-        String seed = getSeed();
+    public static final int TOP_N = 10;
+
+    public List<Result> execute(String inputPath, boolean caseInsensitive, int minLength, int maxLength) {
+        String outputPath = "output-" + getSeed();
 
         // execute hadoop jar
-        String executeCommand = "/home/chenjie/workspace/count/execute.sh " + seed;
+        String executeCommand = String.format("/home/chenjie/workspace/count/execute.sh %s %s %s %d %d", inputPath, outputPath, caseInsensitive,
+                minLength, maxLength);
         exec(executeCommand);
 
         // fetch output from hdfs
-        String fetchCommand = "/home/chenjie/workspace/count/fetch.sh " + seed;
+        String fetchCommand = String.format("/home/chenjie/workspace/count/fetch.sh %s", outputPath);
         List<String> lines = exec(fetchCommand);
 
         // parse results
@@ -68,11 +72,14 @@ public class CountService {
                 log.warn("unable to parse: {}", line);
             }
         }
-        return results;
+
+        Collections.sort(results);
+
+        return results.subList(0, TOP_N);
     }
 
     private String getSeed() {
-        return String.valueOf(System.currentTimeMillis());
+        return String.valueOf(System.currentTimeMillis()).substring(8);
     }
 
 }
