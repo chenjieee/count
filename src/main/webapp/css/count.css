@@ -87,6 +87,11 @@ table.vertical-text-center>tbody>tr>td {
     display: none;
 }
 
+.d3-tip span {
+    font-weight: bold;
+    color: purple;
+}
+
 /* ---- sticky footer styles ---- */
 
 html {

@@ -43,6 +43,11 @@ countApp.controller('countController', function($scope, $http, growl) {
     $scope.draw = function() {
         d3.select('#chart_holder').html('');
 
+        var tip = d3.tip()
+            .attr('class', 'd3-tip')
+            .html(function(d) { return '<span>' + d.count + '</span>' })
+            .offset([-2, 0])
+
         var margin = { top: 20, right: 20, bottom: 30, left: 50 };
         var width = 800 - margin.left - margin.right;
         var height = 400 - margin.top - margin.bottom;
@@ -66,6 +71,8 @@ countApp.controller('countController', function($scope, $http, growl) {
             .attr('height', height + margin.top + margin.bottom)
           .append('g')
             .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+        svg.call(tip);
 
         x.domain($scope.results.map(function(d) { return d.word; }));
         y.domain([0, d3.max($scope.results, function(d) { return d.count; })]);
@@ -92,7 +99,9 @@ countApp.controller('countController', function($scope, $http, growl) {
             .attr('x', function(d) { return x(d.word); })
             .attr('width', x.rangeBand())
             .attr('y', function(d) { return y(d.count); })
-            .attr('height', function(d) { return height - y(d.count); });
+            .attr('height', function(d) { return height - y(d.count); })
+          .on('mouseover', tip.show)
+          .on('mouseout', tip.hide);
     };
 
 });
