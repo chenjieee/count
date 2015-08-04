@@ -9,7 +9,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.sample.count.model.Book;
 import com.sample.count.model.Result;
 import com.sample.count.service.CountService;
 
@@ -19,11 +18,6 @@ public class CountController {
 
     @Autowired
     CountService countService;
-
-    @RequestMapping(method = GET, value = "/now")
-    public Book now() {
-        return new Book(1, "Tom and Jerry");
-    }
 
     @RequestMapping(method = GET, value = "/execute")
     public List<Result> execute(
